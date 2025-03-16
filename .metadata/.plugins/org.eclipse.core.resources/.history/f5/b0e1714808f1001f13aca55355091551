@@ -1,0 +1,14 @@
+package com.ecommerce.service;
+
+import org.springframework.stereotype.Service;
+
+import com.ecommerce.message.NotificationService;
+
+@Service("smsNotificationService")
+public class UserNotification implements NotificationService {
+    @Override
+    public void sendNotificationMessage(String message) {
+	System.out.println("Sending sms notification" + message);
+    }
+
+}

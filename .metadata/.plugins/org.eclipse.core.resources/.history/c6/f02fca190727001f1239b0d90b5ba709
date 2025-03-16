@@ -1,0 +1,5 @@
+package com.patientmis.service;
+
+public class PatientReportService {
+
+}

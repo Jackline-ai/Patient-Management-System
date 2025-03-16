@@ -1,0 +1,25 @@
+
+package com.patientmis.service;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.patientmis.repository.PatientRepository;
+import com.patientmis.repository.ServiceItemsRepository;
+
+@Service
+public class PatientService {
+    private PatientRepository patientRepository;
+    private ServiceItemsRepository serviceItemsRepository;
+
+    @Autowired
+    public void setPatientRepository(PatientRepository patientRepository) {
+	this.patientRepository = patientRepository;
+    }
+
+    @Autowired
+    public void setServiceItemsRepostory(ServiceItemsRepository serviceItemsRepository) {
+	this.serviceItemsRepository = serviceItemsRepository;
+    }
+
+}

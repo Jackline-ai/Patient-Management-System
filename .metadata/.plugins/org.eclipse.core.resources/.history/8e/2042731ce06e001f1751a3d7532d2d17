@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?><project-modules id="moduleCoreId" project-version="1.5.0">
+    <wb-module deploy-name="CRESWAVE_CODE_TEST">
+        <property name="context-root" value="CRESWAVE_CODE_TEST"/>
+        <property name="java-output-path" value="/CRESWAVE_CODE_TEST/target/classes"/>
+    </wb-module>
+</project-modules>

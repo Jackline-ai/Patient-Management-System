@@ -1,0 +1,9 @@
+package com.patientmis.repository;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.patientmis.model.PatientServiceLists;
+
+public interface ServiceItemsRepository extends JpaRepository<PatientServiceLists, Long> {
+
+}

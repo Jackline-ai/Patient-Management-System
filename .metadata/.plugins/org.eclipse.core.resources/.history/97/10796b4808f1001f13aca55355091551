@@ -1,0 +1,5 @@
+package com.ecommerce.message;
+
+public interface NotificationService {
+    NotificationService sendNotificationMessage(String message);
+}

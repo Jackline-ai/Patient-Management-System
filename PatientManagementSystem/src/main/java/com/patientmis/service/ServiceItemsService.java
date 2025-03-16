@@ -1,0 +1,40 @@
+package com.patientmis.service;
+
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+
+import com.patientmis.exception.ResourceNotFoundException;
+import com.patientmis.exception.ServiceNotFoundException;
+import com.patientmis.model.PatientServiceItems;
+import com.patientmis.repository.ServiceItemsRepository;
+
+@Service
+public class ServiceItemsService {
+    private final ServiceItemsRepository serviceItemsRepository;
+
+    public ServiceItemsService(ServiceItemsRepository serviceItemsRepository) {
+	this.serviceItemsRepository = serviceItemsRepository;
+    }
+
+    public PatientServiceItems createServiceItems(PatientServiceItems services) {
+	return serviceItemsRepository.save(services);
+    }
+
+    public List<PatientServiceItems> getAllServices() {
+	return serviceItemsRepository.findAll();
+    }
+
+    public PatientServiceItems getServiceById(Long serviceId) {
+	return serviceItemsRepository.findById(serviceId)
+		.orElseThrow(() -> new ServiceNotFoundException("Service with Id" + serviceId + "not found"));
+    }
+
+    public void deleteServiceById(Long serviceId) {
+	PatientServiceItems services = serviceItemsRepository.findById(serviceId)
+		.orElseThrow(() -> new ResourceNotFoundException("Service with ID" + serviceId + "does not exist"));
+	serviceItemsRepository.delete(services);
+
+    }
+
+}

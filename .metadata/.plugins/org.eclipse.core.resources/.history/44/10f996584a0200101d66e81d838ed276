@@ -1,0 +1,38 @@
+package com.patientmis.model;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.Table;
+
+@Entity
+@Table(name = "patient_registration")
+
+public class PatientRegistration {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "patient_number")
+    private Long patientNumber;
+
+    private String firstName;
+    private String middleName;
+    private String lastName;
+    private String phoneNumber;
+    private String email;
+    @ManyToMany
+    @JoinTable(name = "patient_service", joinColumns = @JoinColumn(name = "patient_number"), inverseJoinColumns = @JoinColumn(name = "service_id"))
+    private List<PatientService> services = new ArrayList<>();
+
+    private Date date;
+
+   
+}

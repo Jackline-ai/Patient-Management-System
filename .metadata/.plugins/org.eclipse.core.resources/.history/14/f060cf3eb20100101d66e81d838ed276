@@ -1,0 +1,5 @@
+package com.patientmis.exception;
+
+public class PatientNotFoundException {
+
+}

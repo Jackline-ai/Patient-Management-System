@@ -1,0 +1,45 @@
+package com.patientmis.controller;
+
+import java.util.List;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.patientmis.exception.NoDataFoundException;
+import com.patientmis.model.PatientRegistration;
+import com.patientmis.service.PatientService;
+
+@RestController
+@RequestMapping("/api")
+public class PatientController {
+    private final PatientService patientService;
+
+    public PatientController(PatientService patientService) {
+	this.patientService = patientService;
+    }
+
+    public ResponseEntity<PatientRegistration> registerPatient(@RequestBody @Valid PatientRegistration patient) {
+	PatientRegistration savedPatient = patientService.registerPatient(patient);
+	return ResponseEntity.status(HttpStatus.CREATED).body(savedPatient);
+    }
+
+    public ResponseEntity<?> retrieveAllPatients() {
+	List<PatientRegistration> patients = patientService.getAllpatients();
+
+	if (patients.isEmpty()) {
+	    throw new NoDataFoundException("No Patients Found");
+	}
+	return ResponseEntity.ok(patients);
+    }
+
+    public ResponseEntity<?> getpatientById(@PathVariable Long patientNumber) {
+	PatientRegistration patient = patientService.getById(patientNumber);
+	return ResponseEntity.ok(patient);
+
+    }
+
+}

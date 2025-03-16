@@ -1,0 +1,30 @@
+package com.patientmis.controller;
+
+import java.util.List;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.patientmis.model.PatientRegistration;
+import com.patientmis.service.PatientService;
+
+@RestController
+@RequestMapping("/api")
+public class PatientController {
+    private final PatientService patientService;
+
+    public PatientController(PatientService patientService) {
+	this.patientService = patientService;
+    }
+
+    public ResponseEntity<?> retrieveAllPatients() {
+	List<PatientRegistration> patients = patientService.getAllpatients();
+
+	if (patients.isEmpty()) {
+	    throw new NoDataFoundException("No Patients Found");
+	}
+	return ResponseEntity.ok(patients);
+    }
+
+}
