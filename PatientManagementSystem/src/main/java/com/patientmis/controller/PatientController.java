@@ -1,7 +1,17 @@
 package com.patientmis.controller;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PagedResourcesAssembler;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.PagedModel;
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -10,6 +20,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.patientmis.exception.NoDataFoundException;
@@ -22,18 +33,21 @@ import jakarta.validation.Valid;
 @RequestMapping("/api")
 public class PatientController {
     private final PatientService patientService;
+    private final PagedResourcesAssembler<PatientRegistration> pagedAssembler;
 
-    public PatientController(PatientService patientService) {
+    public PatientController(PatientService patientService,
+	    PagedResourcesAssembler<PatientRegistration> pagedAssembler) {
 	this.patientService = patientService;
+	this.pagedAssembler = pagedAssembler;
     }
 
-    @PostMapping("/create-patient")
+    @PostMapping("/public/create-patient")
     public ResponseEntity<PatientRegistration> registerPatient(@RequestBody @Valid PatientRegistration patient) {
 	PatientRegistration savedPatient = patientService.registerPatient(patient);
 	return ResponseEntity.status(HttpStatus.CREATED).body(savedPatient);
     }
 
-    @GetMapping("/patients")
+    @GetMapping("/get-all-patients")
     public ResponseEntity<?> retrieveAllPatients() {
 	List<PatientRegistration> patients = patientService.getAllpatients();
 
@@ -43,17 +57,48 @@ public class PatientController {
 	return ResponseEntity.ok(patients);
     }
 
-    @GetMapping("/patients/{patientNumber}")
-    public ResponseEntity<?> getpatientById(@PathVariable Long patientNumber) {
+    @GetMapping("/getPatientById/{patientNumber}")
+    public ResponseEntity<?> getPatientById(@PathVariable Long patientNumber) {
 	PatientRegistration patient = patientService.getById(patientNumber);
 	return ResponseEntity.ok(patient);
 
     }
 
-    @DeleteMapping("/{patientNumber}")
-    public ResponseEntity<String> deletePatient(@PathVariable Long patientNumber) {
+    @DeleteMapping("/public/deletePatientById/{patientNumber}")
+    public ResponseEntity<String> deletePatientById(@PathVariable Long patientNumber) {
 	patientService.deleteById(patientNumber);
 	return ResponseEntity.ok("Patient Successfully Deleted!");
     }
 
+    @GetMapping("/searchPatientByName")
+    public ResponseEntity<List<PatientRegistration>> searchPatientByName(@RequestParam String name) {
+	List<PatientRegistration> patient = patientService.searchPatientByName(name);
+
+	if (patient.isEmpty()) {
+	    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(patient);
+	}
+
+	return ResponseEntity.ok(patient);
+    }
+
+    @GetMapping("/getTotalPatients")
+    public Map<String, Long> getTotalPatients() {
+	return Collections.singletonMap("totalPatients", patientService.getTotalPatients());
+    }
+
+    @GetMapping("/getallpatientspages")
+    public ResponseEntity<?> getAllPatients(@RequestParam(defaultValue = "0") int page,
+	    @RequestParam(defaultValue = "20") int size, @RequestParam(defaultValue = "patientNumber") String sortBy) {
+	Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy));
+	Page<PatientRegistration> patientsPage = patientService.getAllPatients(pageable);
+	if (patientsPage.isEmpty()) {
+	    return ResponseEntity.noContent().build();
+	}
+	PagedModel<EntityModel<PatientRegistration>> pagedModel = pagedAssembler
+		.toModel(patientsPage,
+			patient -> EntityModel.of(patient, WebMvcLinkBuilder.linkTo(
+				WebMvcLinkBuilder.methodOn(PatientController.class).getAllPatients(page, size, sortBy))
+				.withSelfRel()));
+	return ResponseEntity.ok(pagedModel);
+    }
 }

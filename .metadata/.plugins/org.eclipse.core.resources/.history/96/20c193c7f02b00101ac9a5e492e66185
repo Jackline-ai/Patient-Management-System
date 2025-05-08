@@ -1,0 +1,106 @@
+package com.patientmis.service;
+
+import java.util.List;
+import java.util.Optional;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+
+import com.patientmis.dto.ServiceRegistrationEvent;
+import com.patientmis.exception.ResourceNotFoundException;
+import com.patientmis.kafka.KafkaProducerService;
+import com.patientmis.model.PatientServiceItems;
+import com.patientmis.repository.ServiceItemsRepository;
+
+@Service
+public class ServiceItemsService {
+    private final ServiceItemsRepository serviceItemsRepository;
+    private final KafkaProducerService serviceKafkaProducer;
+
+    public ServiceItemsService(ServiceItemsRepository serviceItemsRepository,
+	    KafkaProducerService serviceKafkaProducer) {
+	this.serviceItemsRepository = serviceItemsRepository;
+	this.serviceKafkaProducer = serviceKafkaProducer;
+    }
+
+    public PatientServiceItems createServiceItems(PatientServiceItems services) {
+	try {
+	    PatientServiceItems saved = serviceItemsRepository.save(services);
+	    ServiceRegistrationEvent event = new ServiceRegistrationEvent(saved.getServiceId(), saved.getServiceName(),
+		    saved.getQuantity(), saved.getPrice(), saved.getDiscount(), saved.getTotal(), "CREATE");
+	    serviceKafkaProducer.SendServiceRegistration(event);
+
+	    return saved;
+	} catch (Exception e) {
+	    throw new RuntimeException("service not saved");
+	}
+
+    }
+
+    public List<PatientServiceItems> getAllServices() {
+	try {
+	    return serviceItemsRepository.findAll();
+	} catch (Exception e) {
+	    throw new RuntimeException("Error retrieving services");
+	}
+
+    }
+
+    public Optional<PatientServiceItems> getServiceById(Long serviceId) {
+	try {
+	    return serviceItemsRepository.findById(serviceId);
+	} catch (Exception e) {
+	    throw new RuntimeException("Service with Id" + serviceId + "not found");
+	}
+
+    }
+
+    public void deleteServiceById(Long serviceId) {
+	try {
+	    Optional<PatientServiceItems> service = serviceItemsRepository.findById(serviceId);
+	    if (service.isPresent()) {
+		PatientServiceItems serviceItem = service.get();
+
+		ServiceRegistrationEvent event = new ServiceRegistrationEvent();
+		event.setServiceId(service.get().getServiceId());
+		event.setEventType("DELETE");
+		event.setServiceName(service.get().getServiceName());
+
+		serviceKafkaProducer.SendServiceRegistration(event);
+
+		serviceItemsRepository.delete(service.get());
+
+	    } else {
+		throw new ResourceNotFoundException("Service with ID" + serviceId + "does not exist");
+	    }
+
+	} catch (Exception e) {
+	    new RuntimeException("error deleting service");
+	}
+    }
+
+    public List<PatientServiceItems> searchServiceByName(String name) {
+	try {
+	    return serviceItemsRepository.searchServiceByName(name);
+	} catch (Exception e) {
+	    throw new RuntimeException("Error retrieving the service");
+	}
+    }
+
+    public long getTotalServices() {
+	try {
+	    return serviceItemsRepository.countService();
+	} catch (Exception e) {
+	    throw new RuntimeException("Error counting services");
+	}
+    }
+
+    public Page<PatientServiceItems> getAllServices(Pageable pageable) {
+	try {
+	    return serviceItemsRepository.findAll(pageable);
+	} catch (Exception e) {
+	    throw new RuntimeException("Error retriving service paginated data");
+	}
+    }
+}

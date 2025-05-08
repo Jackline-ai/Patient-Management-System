@@ -1,0 +1,67 @@
+package com.patientmis.dto;
+
+import java.time.LocalDateTime;
+import java.util.Date;
+
+public class PatientRegistrationEvent {
+    private Long patientNumber;
+    private String fullName;
+    private String phoneNumber;
+    private String email;
+    private LocalDateTime  createdAt;
+
+    public PatientRegistrationEvent() {
+
+    }
+
+    public PatientRegistrationEvent(Long patientNumber, String fullName, String phoneNumber, String email,
+	    LocalDateTime createdAt) {
+	this.patientNumber = patientNumber;
+	this.fullName = fullName;
+	this.phoneNumber = phoneNumber;
+	this.email = email;
+	this.createdAt = createdAt;
+
+    }
+
+    public Long getPatientNumber() {
+	return patientNumber;
+    }
+
+    public String getFullName() {
+	return fullName;
+    }
+
+    public String getPhoneNumber() {
+	return phoneNumber;
+    }
+
+    public String getEmail() {
+	return email;
+    }
+
+    public LocalDateTime  getCreatedAt() {
+	return createdAt;
+    }
+
+    public void setPatientNumber(Long patientNumber) {
+	this.patientNumber = patientNumber;
+    }
+
+    public void setFullName(String fullName) {
+	this.fullName = fullName;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+	this.phoneNumber = phoneNumber;
+    }
+
+    public void setEmail(String email) {
+	this.email = email;
+    }
+
+    public void setCreatedAt(LocalDateTime  createdAt) {
+	this.createdAt = createdAt;
+    }
+
+}

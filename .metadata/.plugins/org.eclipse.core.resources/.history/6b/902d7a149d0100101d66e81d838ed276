@@ -1,5 +1,0 @@
-package com.patientmis.repository;
-
-public interface PatientRepository {
-
-}

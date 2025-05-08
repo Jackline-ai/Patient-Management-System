@@ -1,0 +1,18 @@
+package com.patientmis.kafka;
+
+import org.springframework.kafka.annotation.KafkaListener;
+
+import com.patientmis.dto.ServiceRegistrationEvent;
+
+public class ServiceConsumer {
+    @KafkaListener(topics = "service-registrations", groupId = "service-registrations-group")
+    public void handleServiceRegistration(ServiceRegistrationEvent event) {
+	System.out.println("Service registration received via kafka: ");
+	System.out.println("Service: " + event.getServiceName());
+	System.out.println("Quantity: " + event.getQuantity());
+	System.out.println("Price: " + event.getPrice());
+	System.out.println("Discount: " + event.getDiscount());
+	System.out.println("Total: " + event.getTotal());
+    }
+
+}

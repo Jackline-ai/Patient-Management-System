@@ -1,8 +1,0 @@
-
-package com.patientmis.service;
-
-@Service
-public class PatientService {
-    private 
-
-}

@@ -1,7 +1,18 @@
 package com.patientmis.controller;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PagedResourcesAssembler;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.PagedModel;
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -10,6 +21,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.patientmis.exception.NoDataFoundException;
@@ -22,37 +34,69 @@ import jakarta.validation.Valid;
 @RequestMapping("/api")
 public class ServiceItemController {
     private final ServiceItemsService serviceItems;
+    private final PagedResourcesAssembler<PatientServiceItems> pagedAssembler;
 
-    public ServiceItemController(ServiceItemsService serviceItems) {
+    public ServiceItemController(ServiceItemsService serviceItems,
+	    PagedResourcesAssembler<PatientServiceItems> pagedAssembler) {
 	this.serviceItems = serviceItems;
+	this.pagedAssembler = pagedAssembler;
     }
 
-    @PostMapping("/service")
+    @PostMapping("/public/createServiceItem")
     public ResponseEntity<?> createServiceItem(@RequestBody @Valid PatientServiceItems service) {
 	PatientServiceItems savedService = serviceItems.createServiceItems(service);
 	return ResponseEntity.status(HttpStatus.CREATED).body(savedService);
     }
 
-    @GetMapping("/services")
+    @GetMapping("/getAllServices")
     public ResponseEntity<?> getAllServices() {
 	List<PatientServiceItems> services = serviceItems.getAllServices();
 	if (services.isEmpty()) {
 	    throw new NoDataFoundException("No services found!");
 	}
 	return ResponseEntity.ok(services);
-
     }
 
-    @GetMapping("/{serviceId}")
+    @GetMapping("/getServiceById/{serviceId}")
     public ResponseEntity<?> getServiceById(@PathVariable Long serviceId) {
-	PatientServiceItems service = serviceItems.getServiceById(serviceId);
+	Optional<PatientServiceItems> service = serviceItems.getServiceById(serviceId);
 	return ResponseEntity.ok(service);
     }
 
-    @DeleteMapping("/{serviceId}")
-    public ResponseEntity<String> deleteServiceById(Long serviceId) {
+    @DeleteMapping("/deleteServiceById/{serviceId}")
+    public ResponseEntity<String> deleteServiceById(@PathVariable Long serviceId) {
 	serviceItems.deleteServiceById(serviceId);
 	return ResponseEntity.ok("Service deleted successfully");
     }
 
+    @GetMapping("/public/searchServiceByName")
+    public ResponseEntity<List<PatientServiceItems>> searchServiceByName(@RequestParam String name) {
+	List<PatientServiceItems> services = serviceItems.searchServiceByName(name);
+	return ResponseEntity.ok(services);
+    }
+
+    @GetMapping("/getTotalServices")
+    public Map<String, Long> getTotalServices() {
+	return Collections.singletonMap("totalServices", serviceItems.getTotalServices());
+    }
+
+    @GetMapping("/getservicespages")
+    public ResponseEntity<?> getServices(@RequestParam(defaultValue = "0") int page,
+	    @RequestParam(defaultValue = "10") int size, @RequestParam(defaultValue = "serviceId") String sortBy) {
+
+	Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy));
+	Page<PatientServiceItems> servicesPage = serviceItems.getAllServices(pageable);
+
+	if (servicesPage.isEmpty()) {
+	    return ResponseEntity.noContent().build();
+	}
+	PagedModel<EntityModel<PatientServiceItems>> pagedModel = pagedAssembler
+		.toModel(servicesPage,
+			service -> EntityModel.of(service, WebMvcLinkBuilder.linkTo(
+				WebMvcLinkBuilder.methodOn(ServiceItemController.class).getServices(page, size, sortBy))
+				.withSelfRel()));
+
+	return ResponseEntity.ok(pagedModel);
+
+    }
 }

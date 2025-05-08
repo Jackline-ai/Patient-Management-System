@@ -1,0 +1,21 @@
+package com.patientmis.kafka;
+
+import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.stereotype.Service;
+
+import com.patientmis.dto.PatientRegistrationEvent;
+
+@Service
+public class PatientKafkaProducer {
+    private final KafkaTemplate<String, PatientRegistrationEvent> kafkaTemplate;
+
+    public PatientKafkaProducer(KafkaTemplate<String, PatientRegistrationEvent> kafkaTemplate) {
+	this.kafkaTemplate = kafkaTemplate;
+    }
+
+    public void SendPatientRegistration(PatientRegistrationEvent event) {
+	kafkaTemplate.send("patient-registrations", event);
+	System.out.println(" kafka message sent: " + event.getFullName());
+    }
+
+}

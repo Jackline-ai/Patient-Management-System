@@ -1,0 +1,5 @@
+package com.patientmis.kafka;
+
+public class ServiceConsumer {
+
+}

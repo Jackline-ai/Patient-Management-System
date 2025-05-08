@@ -1,7 +1,9 @@
 package com.patientmis.model;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.hibernate.annotations.CreationTimestamp;
@@ -36,6 +38,10 @@ public class PatientRegistration {
 
     @CreationTimestamp
     private LocalDateTime createdAt;
+
+    public Date getFormattedCreatedAt() {
+	return Date.from(createdAt.atZone(ZoneId.systemDefault()).toInstant());
+    }
 
     public Long getPatientNumber() {
 	return patientNumber;
