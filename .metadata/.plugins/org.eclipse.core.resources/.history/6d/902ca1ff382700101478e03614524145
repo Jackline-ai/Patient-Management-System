@@ -1,8 +1,0 @@
-package com.patientmis.kafka;
-
-import org.springframework.stereotype.Service;
-
-@Service
-public class PatientKafkaConsumer {
-
-}

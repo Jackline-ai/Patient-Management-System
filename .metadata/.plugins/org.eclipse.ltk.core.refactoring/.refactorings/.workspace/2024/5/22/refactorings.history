@@ -1,3 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<session version="1.0">&#x0A;<refactoring comment="Delete resource &apos;JasperReportDecompier&apos;" deleteContents="true" description="Delete resource &apos;JasperReportDecompier&apos;" element1="/JasperReportDecompier" flags="7" id="org.eclipse.ltk.core.refactoring.delete.resources" resources="1" stamp="1716991939278"/>&#x0A;<refactoring comment="Rename resource &apos;HelloWorldBean&apos; to &apos;UserCrudOperations&apos;" description="Rename resource &apos;HelloWorldBean&apos;" flags="7" id="org.eclipse.ltk.core.refactoring.rename.resource" input="/HelloWorldBean" name="UserCrudOperations" stamp="1717055118531" updateReferences="true"/>
-</session>

@@ -1,5 +1,0 @@
-package com.patientmis.dto;
-
-public class ServiceRegistrationEvent {
-
-}

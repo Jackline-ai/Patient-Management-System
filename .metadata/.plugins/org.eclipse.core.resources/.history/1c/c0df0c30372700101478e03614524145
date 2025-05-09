@@ -1,6 +1,0 @@
-package com.patientmis.kafka;
-
-@Service
-public class PatientKafkaConsumer {
-
-}

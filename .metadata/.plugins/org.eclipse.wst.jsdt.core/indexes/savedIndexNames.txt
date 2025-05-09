@@ -1,2 +1,0 @@
-INDEX VERSION 1.4+C:\Users\developer\eclipse-workspace-Jackline\.metadata\.plugins\org.eclipse.wst.jsdt.core\indexes
-4067288510.index
